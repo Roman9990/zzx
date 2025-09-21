@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Центр Поддержки</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; 
+            overflow-x: hidden; 
+            position: relative; 
+        }
+
+        .app-container{
+            position:relative;
+            z-index:10;
+            padding:20px;
+            min-height:100vh;
+            display:flex;
+            flex-direction:column
+        }
+
+        .app-header{
+            text-align:center;
+            margin-bottom:30px
+        }
+
+        .animated-logo{
+            font-size:48px;
+            margin-bottom:10px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .gradient-title{
+            background: linear-gradient(45deg, #fff, #f093fb, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .typewriter-subtitle{
+            color: rgba(255,255,255,0.9);
+            font-size: 16px;
+            margin-bottom: 20px
+        }
+
+        .state-container{
+            flex:1;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            min-height:400px
+        }
+
+        .admins-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+            gap:20px;
+            width:100%;
+            max-width:800px;
+            margin:0 auto
+        }
+
+        .admin-card{
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .admin-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border-color: rgba(255,255,255,0.4);
+        }
+
+        .admin-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .admin-card:hover::before {
+            left: 100%;
+        }
+
+        .admin-avatar{
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            border: 3px solid rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .admin-card:hover .admin-avatar {
+            transform: rotateY(360deg);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .admin-tag{
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff 0%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .admin-status{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px
+        }
+
+        .status-dot{
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .status-dot.online{
+            background: #2ecc71;
+            box-shadow: 0 0 10px #2ecc71
+        }
+
+        .status-dot.offline{
+            background: #95a5a6
+        }
+
+        .admin-info {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .admin-specialization {
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .admin-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #00f2fe;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .admin-role{
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            text-align: center;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+
+        .empty-illustration{
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        .empty-title{
+            font-size: 24px;
+            color: white;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center
+        }
+
+        .empty-subtitle{
+            color: rgba(255,255,255,0.8);
+            font-size: 16px;
+            text-align: center;
+            max-width: 300px;
+            line-height: 1.5
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width:768px){
+            .app-container{padding:15px}
+            .gradient-title{font-size:24px}
+            .admins-grid{grid-template-columns:1fr;gap:15px}
+            .admin-card{padding:20px}
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="animated-logo">🚀</div>
+            <h1 class="gradient-title">Центр Поддержки</h1>
+            <p class="typewriter-subtitle">Выберите администратора для обращения</p>
+        </header>
+
+        <div id="loading-state" class="state-container">
+            <div class="loading-text">
+                Загрузка администраторов...
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+
+        <div id="admins-state" class="state-container" style="display:none;">
+            <div id="admins-grid" class="admins-grid"></div>
+        </div>
+
+        <div id="empty-state" class="state-container" style="display:none;">
+            <div class="empty-illustration">👨‍💼</div>
+            <h2 class="empty-title">Администраторы недоступны</h2>
+            <p class="empty-subtitle">В данный момент нет доступных администраторов. Попробуйте позже.</p>
+        </div>
+    </div>
+
+    <script>
+        class SupportCenter {
+            constructor() {
+                this.admins = [];
+                this.user = null;
+                this.config = {};
+                this.startLoading();
+
+                // Инициализация Telegram WebApp
+                if (window.Telegram && window.Telegram.WebApp) {
+                    window.Telegram.WebApp.ready();
+                    window.Telegram.WebApp.expand();
+                    console.log('📱 Telegram WebApp initialized');
+                }
+            }
+
+            startLoading() {
+                setTimeout(() => this.loadAdminData(), 300);
+            }
+
+            // Robust base64 (utf-8) -> JSON decoding
+            b64ToJson(b64) {
+                try {
+                    const binary = atob(b64);
+                    const bytes = new Uint8Array(binary.length);
+                    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+                    const decoder = new TextDecoder('utf-8');
+                    const jsonStr = decoder.decode(bytes);
+                    return JSON.parse(jsonStr);
+                } catch (err) {
+                    try {
+                        const jsonStr = decodeURIComponent(escape(atob(b64)));
+                        return JSON.parse(jsonStr);
+                    } catch (err2) {
+                        console.error('B64 decode error:', err2);
+                        throw err2;
+                    }
+                }
+            }
+
+            loadAdminData() {
+                try {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const dataParam = urlParams.get('data');
+
+                    if (dataParam) {
+                        const webappData = this.b64ToJson(decodeURIComponent(dataParam));
+                        this.admins = webappData.admins || [];
+                        this.user = webappData.user || {};
+                        this.config = webappData.config || {};
+                        console.log('📊 Loaded admin data:', { 
+                            admins: this.admins.length, 
+                            user: this.user, 
+                            config: this.config 
+                        });
+                    } else {
+                        console.log('ℹ️ No data param in URL - showing empty state');
+                    }
+
+                    this.renderAdmins();
+                } catch (error) {
+                    console.error('Error loading admin data:', error);
+                    this.showEmptyState();
+                }
+            }
+
+            renderAdmins() {
+                const loadingState = document.getElementById('loading-state');
+                const adminsState = document.getElementById('admins-state');
+                const emptyState = document.getElementById('empty-state');
+                const adminsGrid = document.getElementById('admins-grid');
+
+                if (!this.admins || this.admins.length === 0) {
+                    this.showEmptyState();
+                    return;
+                }
+
+                loadingState.style.display = 'none';
+                adminsState.style.display = 'flex';
+                emptyState.style.display = 'none';
+                adminsGrid.innerHTML = '';
+
+                this.admins.forEach((admin, index) => {
+                    const card = this.createAdminCard(admin, index);
+                    adminsGrid.appendChild(card);
+                });
+            }
+
+            createAdminCard(admin, index) {
+                const card = document.createElement('div');
+                card.className = 'admin-card';
+                card.style.animationDelay = `${index * 0.1}s`;
+
+                const isOnline = admin.status === 'online';
+                const statusText = isOnline ? 'Онлайн' : 'Оффлайн';
+                const statusClass = isOnline ? 'online' : 'offline';
+                const accent = admin.accent_color || '#667eea';
+
+                card.innerHTML = `
+                    <div class="card-content">
+                        <div class="admin-avatar" style="background: ${accent};">
+                            ${admin.avatar || '👨‍💼'}
+                        </div>
+                        <h3 class="admin-tag">#${admin.tag}</h3>
+
+                        <div class="admin-info">
+                            <div class="admin-specialization">🎯 ${admin.specialization || 'Общие вопросы'}</div>
+                        </div>
+
+                        <div class="admin-stats">
+                            <div class="stat-item">
+                                <span class="stat-value">⭐${admin.rating || 5.0}</span>
+                                <span class="stat-label">Рейтинг</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">${admin.dialogs_count || 0}</span>
+                                <span class="stat-label">Диалогов</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">${admin.response_time || '5 мин'}</span>
+                                <span class="stat-label">Ответ</span>
+                            </div>
+                        </div>
+
+                        <div class="admin-status">
+                            <div class="status-dot ${statusClass}"></div>
+                            <span class="status-text">${statusText}</span>
+                        </div>
+
+                        <div class="admin-role">${admin.role || 'Администратор'}</div>
+                    </div>
+                `;
+
+                card.addEventListener('click', (e) => this.handleAdminClick(admin, e));
+                return card;
+            }
+
+            handleAdminClick(admin, event) {
+                try {
+                    // Создаем ripple эффект
+                    this.createRipple(event.currentTarget, event);
+
+                    // Данные для отправки в бот
+                    const selectionData = { 
+                        action: 'select_admin', 
+                        admin_id: admin.id, 
+                        admin_tag: admin.tag,
+                        user_id: this.user?.id 
+                    };
+
+                    console.log('🎯 Sending admin selection:', selectionData);
+
+                    if (window.Telegram && window.Telegram.WebApp) {
+                        window.Telegram.WebApp.sendData(JSON.stringify(selectionData));
+                        console.log('📤 Data sent to Telegram');
+                    } else {
+                        console.log('⚠️ Telegram WebApp not available - test mode');
+                        alert(`Выбран администратор: #${admin.tag} (${admin.role})`);
+                    }
+                } catch (error) {
+                    console.error('Error handling admin selection:', error);
+                    alert('Ошибка при выборе администратора');
+                }
+            }
+
+            createRipple(element, event) {
+                const rect = element.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = event.clientX - rect.left - size / 2;
+                const y = event.clientY - rect.top - size / 2;
+
+                const ripple = document.createElement('span');
+                ripple.style.cssText = `
+                    position: absolute;
+                    border-radius: 50%;
+                    background: rgba(255,255,255,0.4);
+                    transform: scale(0);
+                    animation: ripple-animation 0.6s linear;
+                    pointer-events: none;
+                    width: ${size}px;
+                    height: ${size}px;
+                    left: ${x}px;
+                    top: ${y}px;
+                `;
+
+                element.appendChild(ripple);
+
+                setTimeout(() => {
+                    if (ripple.parentNode) {
+                        ripple.parentNode.removeChild(ripple);
+                    }
+                }, 600);
+            }
+
+            showEmptyState() {
+                document.getElementById('loading-state').style.display = 'none';
+                document.getElementById('admins-state').style.display = 'none';
+                document.getElementById('empty-state').style.display = 'flex';
+            }
+        }
+
+        // Запускаем приложение
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Starting Support Center App');
+            new SupportCenter();
+        });
+
+        // Добавляем CSS для ripple анимации
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple-animation {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
