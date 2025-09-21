@@ -1,526 +1,907 @@
-// ✨ КРАСИВЫЙ СЕЛЕКТОР АДМИНИСТРАТОРОВ ✨
-class BeautifulAdminSelector {
-    constructor() {
-        this.admins = [
-            {
-                id: 5518423575,
-                tag: "roman",
-                role: "Владелец",
-                status: "active",
-                avatar: "👑",
-                rating: 5.0,
-                dialogs: 156,
-                resolved: 148,
-                response_time: "2 мин",
-                efficiency: 95,
-                specialties: ["VIP поддержка", "Критические вопросы"],
-                experience: "2+ года"
-            },
-            {
-                id: 123456789,
-                tag: "мукра_адская",
-                role: "Администратор",
-                status: "active",
-                avatar: "🛡️",
-                rating: 4.8,
-                dialogs: 234,
-                resolved: 198,
-                response_time: "3 мин",
-                efficiency: 89,
-                specialties: ["Модерация", "Конфликты"],
-                experience: "1.5 года"
-            },
-            {
-                id: 987654321,
-                tag: "support",
-                role: "Техподдержка",
-                status: "inactive",
-                avatar: "🎧",
-                rating: 4.2,
-                dialogs: 89,
-                resolved: 67,
-                response_time: "8 мин",
-                efficiency: 76,
-                specialties: ["Технические вопросы", "Баги"],
-                experience: "1 год"
-            },
-            {
-                id: 555666777,
-                tag: "moderator_1",
-                role: "Модератор",
-                status: "active",
-                avatar: "⚖️",
-                rating: 4.6,
-                dialogs: 145,
-                resolved: 119,
-                response_time: "5 мин",
-                efficiency: 82,
-                specialties: ["Жалобы", "Спам"],
-                experience: "8 месяцев"
-            },
-            {
-                id: 444333222,
-                tag: "helper",
-                role: "Помощник",
-                status: "busy",
-                avatar: "🤝",
-                rating: 4.1,
-                dialogs: 67,
-                resolved: 48,
-                response_time: "12 мин",
-                efficiency: 71,
-                specialties: ["Новички", "Базовые вопросы"],
-                experience: "3 месяца"
-            }
-        ];
+// ===== ФУТУРИСТИЧЕСКИЙ ADMIN SELECTOR =====
+// Класс для управления всем приложением
 
-        this.filteredAdmins = [...this.admins];
-        this.selectedAdmin = null;
-        this.tg = null;
+class FuturisticAdminPanel {
+  constructor() {
+    this.selectedAdmin = null;
+    this.currentTab = 'available';
+    this.searchTerm = '';
+    this.filteredAdmins = [];
+    this.animationQueue = [];
+    this.isLoading = true;
+    this.magneticElements = [];
 
-        this.init();
+    // Данные приложения (по умолчанию, будут загружены с сервера)
+    this.appData = {
+      "admins": [
+        {
+          "id": "123456789",
+          "tag": "мукра_адская",
+          "role": "Владелица",
+          "rating": 4.8,
+          "status": "online",
+          "avatar": "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
+          "dialogs_count": 15,
+          "response_time": "2 мин",
+          "specialization": "Общие вопросы"
+        },
+        {
+          "id": "987654321", 
+          "tag": "support_master",
+          "role": "Техподдержка",
+          "rating": 4.5,
+          "status": "busy", 
+          "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+          "dialogs_count": 23,
+          "response_time": "5 мин",
+          "specialization": "Технические вопросы"
+        },
+        {
+          "id": "555666777",
+          "tag": "moderator_pro", 
+          "role": "Модератор",
+          "rating": 4.9,
+          "status": "online",
+          "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face", 
+          "dialogs_count": 8,
+          "response_time": "1 мин",
+          "specialization": "Модерация"
+        },
+        {
+          "id": "444555666",
+          "tag": "helper_girl",
+          "role": "Помощник",
+          "rating": 4.7,
+          "status": "busy",
+          "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face",
+          "dialogs_count": 19,
+          "response_time": "3 мин", 
+          "specialization": "Новые пользователи"
+        },
+        {
+          "id": "777888999",
+          "tag": "expert_advisor",
+          "role": "Эксперт",
+          "rating": 5.0,
+          "status": "online", 
+          "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
+          "dialogs_count": 30,
+          "response_time": "1 мин",
+          "specialization": "Сложные вопросы"
+        }
+      ],
+      "unavailable_admins": [
+        {
+          "id": "111222333",
+          "tag": "admin_cool", 
+          "reason": "Оффлайн",
+          "last_seen": "2 часа назад",
+          "avatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
+        },
+        {
+          "id": "999000111",
+          "tag": "night_admin",
+          "reason": "В отпуске",
+          "last_seen": "3 дня назад", 
+          "avatar": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&h=150&fit=crop&crop=face"
+        }
+      ]
+    };
+
+    this.init();
+  }
+
+  // ===== ИНИЦИАЛИЗАЦИЯ =====
+  async init() {
+    console.log('🚀 Инициализация футуристической панели админов...');
+
+    // Ждем загрузку DOM
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => this.setupApp());
+    } else {
+      this.setupApp();
+    }
+  }
+
+  async setupApp() {
+    try {
+      // Показываем загрузку на 3 секунды для эффекта
+      setTimeout(() => {
+        this.hideLoadingScreen();
+      }, 3000);
+
+      // Загружаем данные
+      await this.loadData();
+
+      // Настраиваем обработчики событий
+      this.setupEventListeners();
+
+      // Инициализируем интерфейс
+      this.setupInterface();
+
+      // Запускаем анимации
+      this.startAnimations();
+
+      console.log('✅ Приложение инициализировано успешно');
+
+    } catch (error) {
+      console.error('❌ Ошибка инициализации:', error);
+      this.showError('Ошибка загрузки приложения');
+    }
+  }
+
+  // ===== ЗАГРУЗКА ДАННЫХ =====
+  async loadData() {
+    try {
+      // Попытка загрузить данные с сервера
+      // В реальном приложении здесь будет API запрос
+      // const response = await fetch('./data/admins.json');
+      // this.appData = await response.json();
+
+      console.log('📊 Данные загружены:', this.appData);
+      this.filterAdmins();
+
+    } catch (error) {
+      console.warn('⚠️ Не удалось загрузить данные с сервера, используем данные по умолчанию');
+    }
+  }
+
+  // ===== СКРЫТИЕ ЭКРАНА ЗАГРУЗКИ =====
+  hideLoadingScreen() {
+    const loadingScreen = document.getElementById('loadingScreen');
+    const mainApp = document.getElementById('mainApp');
+
+    if (loadingScreen && mainApp) {
+      loadingScreen.style.animation = 'fadeOut 1s ease forwards';
+
+      setTimeout(() => {
+        loadingScreen.style.display = 'none';
+        mainApp.style.display = 'block';
+        mainApp.style.animation = 'fadeIn 1s ease forwards';
+        this.isLoading = false;
+      }, 1000);
+    }
+  }
+
+  // ===== НАСТРОЙКА ОБРАБОТЧИКОВ СОБЫТИЙ =====
+  setupEventListeners() {
+    // Поиск
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => this.handleSearch(e.target.value));
+      searchInput.addEventListener('focus', () => this.addSearchFocus());
+      searchInput.addEventListener('blur', () => this.removeSearchFocus());
     }
 
-    init() {
-        console.log('✨ Инициализация красивого селектора...');
+    // Переключение табов
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const tab = e.currentTarget.getAttribute('data-tab');
+        this.switchTab(tab);
+      });
+    });
 
-        this.initTelegram();
-        this.createParticles();
-        this.bindEvents();
-        this.animateStats();
+    // Модальное окно
+    const modal = document.getElementById('confirmModal');
+    const closeModal = document.getElementById('closeModal');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const confirmBtn = document.getElementById('confirmBtn');
+
+    if (closeModal) closeModal.addEventListener('click', () => this.closeModal());
+    if (cancelBtn) cancelBtn.addEventListener('click', () => this.closeModal());
+    if (confirmBtn) confirmBtn.addEventListener('click', () => this.confirmSelection());
+
+    // Закрытие модального окна по клику на backdrop
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal || e.target.classList.contains('modal-backdrop')) {
+          this.closeModal();
+        }
+      });
+    }
+
+    // Клавиши клавиатуры
+    document.addEventListener('keydown', (e) => this.handleKeyPress(e));
+
+    // Magnetic эффекты для карточек
+    this.setupMagneticEffects();
+  }
+
+  // ===== НАСТРОЙКА ИНТЕРФЕЙСА =====
+  setupInterface() {
+    this.renderAdmins();
+    this.updateBadges();
+    this.setupParallax();
+  }
+
+  // ===== ОБРАБОТКА ПОИСКА =====
+  handleSearch(query) {
+    this.searchTerm = query.toLowerCase();
+    this.filterAdmins();
+    this.renderAdmins();
+
+    // Анимация поиска
+    this.animateSearch();
+  }
+
+  animateSearch() {
+    const searchIcon = document.querySelector('.search-icon');
+    if (searchIcon) {
+      searchIcon.style.animation = 'none';
+      setTimeout(() => {
+        searchIcon.style.animation = 'breathe 2s infinite';
+      }, 10);
+    }
+  }
+
+  addSearchFocus() {
+    const searchContainer = document.querySelector('.search-container');
+    if (searchContainer) {
+      searchContainer.classList.add('focused');
+    }
+  }
+
+  removeSearchFocus() {
+    const searchContainer = document.querySelector('.search-container');
+    if (searchContainer) {
+      searchContainer.classList.remove('focused');
+    }
+  }
+
+  // ===== ФИЛЬТРАЦИЯ АДМИНОВ =====
+  filterAdmins() {
+    if (!this.searchTerm) {
+      this.filteredAdmins = [...this.appData.admins];
+    } else {
+      this.filteredAdmins = this.appData.admins.filter(admin =>
+        admin.tag.toLowerCase().includes(this.searchTerm) ||
+        admin.role.toLowerCase().includes(this.searchTerm) ||
+        admin.specialization.toLowerCase().includes(this.searchTerm)
+      );
+    }
+  }
+
+  // ===== ПЕРЕКЛЮЧЕНИЕ ТАБОВ =====
+  switchTab(tabName) {
+    if (this.currentTab === tabName) return;
+
+    this.currentTab = tabName;
+
+    // Обновляем активные классы
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.remove('active');
+      if (btn.getAttribute('data-tab') === tabName) {
+        btn.classList.add('active');
+      }
+    });
+
+    // Переключаем контент с анимацией
+    document.querySelectorAll('.tab-content').forEach(content => {
+      content.classList.remove('active');
+    });
+
+    setTimeout(() => {
+      const activeContent = document.getElementById(tabName + 'Tab');
+      if (activeContent) {
+        activeContent.classList.add('active');
         this.renderAdmins();
+      }
+    }, 150);
 
-        setTimeout(() => {
-            document.getElementById('app').style.opacity = '1';
-        }, 100);
+    // Анимация переключения
+    this.animateTabSwitch();
+  }
 
-        console.log('🎉 Красивый селектор готов!');
+  animateTabSwitch() {
+    const activeTab = document.querySelector('.tab-btn.active');
+    if (activeTab) {
+      activeTab.style.transform = 'translateY(-2px) scale(1.05)';
+      setTimeout(() => {
+        activeTab.style.transform = '';
+      }, 200);
+    }
+  }
+
+  // ===== ОТРИСОВКА АДМИНОВ =====
+  renderAdmins() {
+    if (this.currentTab === 'available') {
+      this.renderAvailableAdmins();
+    } else if (this.currentTab === 'unavailable') {
+      this.renderUnavailableAdmins();
+    }
+  }
+
+  renderAvailableAdmins() {
+    const grid = document.getElementById('availableGrid');
+    if (!grid) return;
+
+    const adminsToShow = this.filteredAdmins;
+
+    if (adminsToShow.length === 0) {
+      grid.innerHTML = `
+        <div class="no-results">
+          <div class="no-results-icon">
+            <i class="fas fa-search"></i>
+          </div>
+          <h3>Ничего не найдено</h3>
+          <p>Попробуйте изменить параметры поиска</p>
+        </div>
+      `;
+      return;
     }
 
-    initTelegram() {
-        if (window.Telegram && window.Telegram.WebApp) {
-            this.tg = window.Telegram.WebApp;
-            this.tg.ready();
-            this.tg.expand();
-            this.tg.setBackgroundColor('#667eea');
-            console.log('📱 Telegram WebApp подключен');
-        }
+    grid.innerHTML = adminsToShow.map((admin, index) => 
+      this.createAdminCard(admin, index)
+    ).join('');
+
+    // Добавляем обработчики событий для карточек
+    this.addCardEventListeners();
+  }
+
+  renderUnavailableAdmins() {
+    const grid = document.getElementById('unavailableGrid');
+    if (!grid) return;
+
+    const unavailableAdmins = this.appData.unavailable_admins || [];
+
+    if (unavailableAdmins.length === 0) {
+      grid.innerHTML = `
+        <div class="no-results">
+          <div class="no-results-icon">
+            <i class="fas fa-smile"></i>
+          </div>
+          <h3>Все админы доступны!</h3>
+          <p>Отличная новость - все администраторы готовы помочь</p>
+        </div>
+      `;
+      return;
     }
 
-    createParticles() {
-        const particlesContainer = document.getElementById('particles');
-        const particleCount = 30;
+    grid.innerHTML = unavailableAdmins.map((admin, index) => 
+      this.createUnavailableCard(admin, index)
+    ).join('');
+  }
 
-        for (let i = 0; i < particleCount; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
-            particle.style.animationDelay = Math.random() * 15 + 's';
-            particle.style.opacity = Math.random() * 0.5 + 0.2;
-            particlesContainer.appendChild(particle);
-        }
+  // ===== СОЗДАНИЕ КАРТОЧКИ АДМИНА =====
+  createAdminCard(admin, index) {
+    const statusClass = this.getStatusClass(admin.status);
+    const statusText = this.getStatusText(admin.status);
+    const stars = this.generateStars(admin.rating);
+
+    return `
+      <div class="admin-card" data-admin-id="${admin.id}" style="animation-delay: ${index * 0.1}s">
+        <div class="admin-header">
+          <div class="admin-avatar">
+            <img src="${admin.avatar}" alt="${admin.tag}" loading="lazy">
+          </div>
+          <div class="admin-info">
+            <h3>@${admin.tag}</h3>
+            <div class="admin-role">${admin.role}</div>
+          </div>
+        </div>
+
+        <div class="admin-details">
+          <div class="admin-stat">
+            <div class="stat-value">${admin.dialogs_count}</div>
+            <div class="stat-label">Диалогов</div>
+          </div>
+          <div class="admin-stat">
+            <div class="stat-value">${admin.response_time}</div>
+            <div class="stat-label">Ответ</div>
+          </div>
+        </div>
+
+        <div class="admin-rating">
+          <div class="stars">${stars}</div>
+          <span class="rating-value">${admin.rating}</span>
+        </div>
+
+        <div class="admin-status ${statusClass}">
+          <div class="status-indicator"></div>
+          <span>${statusText}</span>
+        </div>
+
+        <div class="admin-specialization">
+          ${admin.specialization}
+        </div>
+      </div>
+    `;
+  }
+
+  // ===== СОЗДАНИЕ КАРТОЧКИ НЕДОСТУПНОГО АДМИНА =====
+  createUnavailableCard(admin, index) {
+    return `
+      <div class="admin-card unavailable-card" style="animation-delay: ${index * 0.1}s">
+        <div class="admin-header">
+          <div class="admin-avatar">
+            <img src="${admin.avatar}" alt="${admin.tag}" loading="lazy">
+          </div>
+          <div class="admin-info">
+            <h3>@${admin.tag}</h3>
+            <div class="unavailable-reason">${admin.reason}</div>
+          </div>
+        </div>
+
+        <div class="last-seen">
+          Был в сети: ${admin.last_seen}
+        </div>
+      </div>
+    `;
+  }
+
+  // ===== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =====
+  getStatusClass(status) {
+    const statusMap = {
+      'online': 'status-online',
+      'busy': 'status-busy', 
+      'offline': 'status-offline'
+    };
+    return statusMap[status] || 'status-offline';
+  }
+
+  getStatusText(status) {
+    const textMap = {
+      'online': 'Онлайн',
+      'busy': 'Занят',
+      'offline': 'Оффлайн'
+    };
+    return textMap[status] || 'Недоступен';
+  }
+
+  generateStars(rating) {
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
+    let stars = '';
+
+    // Полные звезды
+    for (let i = 0; i < fullStars; i++) {
+      stars += '<i class="fas fa-star star"></i>';
     }
 
-    bindEvents() {
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => this.handleSearch(e.target.value));
-        }
-
-        // Ripple effect для всех кликабельных элементов
-        document.addEventListener('click', (e) => {
-            if (e.target.closest('.admin-card, .btn, .select-button')) {
-                this.createRipple(e);
-            }
-        });
-
-        // Закрытие модального окна по ESC
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                this.closeModal();
-            }
-        });
-
-        // Закрытие модального окна по клику вне его
-        document.getElementById('modal').addEventListener('click', (e) => {
-            if (e.target.id === 'modal') {
-                this.closeModal();
-            }
-        });
+    // Половина звезды
+    if (hasHalfStar) {
+      stars += '<i class="fas fa-star-half-alt star"></i>';
     }
 
-    createRipple(event) {
-        const button = event.currentTarget;
-        const rect = button.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height);
-        const x = event.clientX - rect.left - size / 2;
-        const y = event.clientY - rect.top - size / 2;
-
-        const ripple = document.createElement('span');
-        ripple.className = 'ripple';
-        ripple.style.width = ripple.style.height = size + 'px';
-        ripple.style.left = x + 'px';
-        ripple.style.top = y + 'px';
-
-        button.appendChild(ripple);
-
-        setTimeout(() => {
-            ripple.remove();
-        }, 600);
+    // Пустые звезды
+    const emptyStars = 5 - Math.ceil(rating);
+    for (let i = 0; i < emptyStars; i++) {
+      stars += '<i class="far fa-star star"></i>';
     }
 
-    animateStats() {
-        const statNumbers = document.querySelectorAll('.stat-number[data-target]');
+    return stars;
+  }
 
-        statNumbers.forEach((stat, index) => {
-            setTimeout(() => {
-                this.animateNumber(stat, parseFloat(stat.dataset.target));
-            }, index * 300);
-        });
+  // ===== ОБРАБОТЧИКИ КАРТОЧЕК =====
+  addCardEventListeners() {
+    document.querySelectorAll('.admin-card:not(.unavailable-card)').forEach(card => {
+      card.addEventListener('click', () => {
+        const adminId = card.getAttribute('data-admin-id');
+        this.selectAdmin(adminId);
+      });
+
+      // Magnetic эффект
+      this.addMagneticEffect(card);
+
+      // Ripple эффект
+      this.addRippleEffect(card);
+    });
+  }
+
+  // ===== MAGNETIC ЭФФЕКТ =====
+  addMagneticEffect(element) {
+    element.addEventListener('mousemove', (e) => {
+      const rect = element.getBoundingClientRect();
+      const x = e.clientX - rect.left - rect.width / 2;
+      const y = e.clientY - rect.top - rect.height / 2;
+
+      const moveX = x * 0.1;
+      const moveY = y * 0.1;
+
+      element.style.transform = `translateX(${moveX}px) translateY(${moveY}px) translateZ(0)`;
+    });
+
+    element.addEventListener('mouseleave', () => {
+      element.style.transform = '';
+    });
+  }
+
+  // ===== RIPPLE ЭФФЕКТ =====
+  addRippleEffect(element) {
+    element.addEventListener('click', (e) => {
+      const ripple = document.createElement('div');
+      const rect = element.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const x = e.clientX - rect.left - size / 2;
+      const y = e.clientY - rect.top - size / 2;
+
+      ripple.style.cssText = `
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(0, 212, 255, 0.6);
+        transform: scale(0);
+        animation: ripple 0.6s linear;
+        left: ${x}px;
+        top: ${y}px;
+        width: ${size}px;
+        height: ${size}px;
+        pointer-events: none;
+      `;
+
+      element.style.position = 'relative';
+      element.appendChild(ripple);
+
+      setTimeout(() => ripple.remove(), 600);
+    });
+  }
+
+  // ===== ВЫБОР АДМИНА =====
+  selectAdmin(adminId) {
+    const admin = this.appData.admins.find(a => a.id === adminId);
+    if (!admin) {
+      console.error('Админ не найден:', adminId);
+      return;
     }
 
-    animateNumber(element, target) {
-        const duration = 2000;
-        const start = 0;
-        const increment = target / (duration / 16);
-        let current = start;
+    this.selectedAdmin = admin;
+    this.showConfirmModal();
+  }
 
-        const timer = setInterval(() => {
-            current += increment;
+  // ===== МОДАЛЬНОЕ ОКНО =====
+  showConfirmModal() {
+    if (!this.selectedAdmin) return;
 
-            if (current >= target) {
-                current = target;
-                clearInterval(timer);
-            }
+    const modal = document.getElementById('confirmModal');
+    const modalAvatar = document.getElementById('modalAvatar');
+    const modalTag = document.getElementById('modalTag');
+    const modalRole = document.getElementById('modalRole');
+    const modalRating = document.getElementById('modalRating');
+    const modalSpec = document.getElementById('modalSpec');
 
-            if (target === Math.floor(target)) {
-                element.textContent = Math.floor(current);
-            } else {
-                element.textContent = current.toFixed(1);
-            }
-        }, 16);
+    if (modal && modalAvatar && modalTag && modalRole && modalRating && modalSpec) {
+      modalAvatar.src = this.selectedAdmin.avatar;
+      modalTag.textContent = `@${this.selectedAdmin.tag}`;
+      modalRole.textContent = this.selectedAdmin.role;
+      modalRating.innerHTML = `${this.generateStars(this.selectedAdmin.rating)} ${this.selectedAdmin.rating}`;
+      modalSpec.textContent = this.selectedAdmin.specialization;
+
+      modal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+
+      // Анимация появления
+      this.animateModal();
     }
+  }
 
-    handleSearch(query) {
-        const searchQuery = query.toLowerCase();
-
-        this.filteredAdmins = this.admins.filter(admin => 
-            admin.tag.toLowerCase().includes(searchQuery) ||
-            admin.role.toLowerCase().includes(searchQuery) ||
-            admin.specialties.some(spec => spec.toLowerCase().includes(searchQuery))
-        );
-
-        this.renderAdmins();
+  closeModal() {
+    const modal = document.getElementById('confirmModal');
+    if (modal) {
+      modal.classList.remove('show');
+      document.body.style.overflow = '';
+      this.selectedAdmin = null;
     }
+  }
 
-    renderAdmins() {
-        const container = document.getElementById('adminGrid');
-        if (!container) return;
-
-        if (this.filteredAdmins.length === 0) {
-            container.innerHTML = `
-                <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
-                    <div style="font-size: 3rem; margin-bottom: 20px; opacity: 0.5;">🔍</div>
-                    <h3 style="font-size: 1.5rem; margin-bottom: 10px;">Администраторы не найдены</h3>
-                    <p style="color: var(--text-secondary);">Попробуйте изменить поисковый запрос</p>
-                </div>
-            `;
-            return;
-        }
-
-        container.innerHTML = this.filteredAdmins.map((admin, index) => 
-            this.createAdminCard(admin, index)
-        ).join('');
-
-        // Анимация появления карточек
-        setTimeout(() => {
-            const cards = container.querySelectorAll('.admin-card');
-            cards.forEach((card, index) => {
-                setTimeout(() => {
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, index * 100);
-            });
-        }, 50);
+  animateModal() {
+    const modalContent = document.querySelector('.modal-content');
+    if (modalContent) {
+      modalContent.style.animation = 'modalSlide 0.4s ease forwards';
     }
+  }
 
-    createAdminCard(admin, index) {
-        const statusClass = `status-${admin.status}`;
-        const statusText = {
-            'active': 'Активен',
-            'busy': 'Занят',
-            'inactive': 'Не в сети'
-        }[admin.status] || 'Неизвестно';
+  // ===== ПОДТВЕРЖДЕНИЕ ВЫБОРА =====
+  async confirmSelection() {
+    if (!this.selectedAdmin) return;
 
-        const stars = this.generateStars(admin.rating);
-        const specialtyTags = admin.specialties.map(spec => 
-            `<span class="specialty-tag">${spec}</span>`
-        ).join('');
-
-        return `
-            <div class="admin-card" onclick="adminSelector.selectAdmin(${admin.id})" style="opacity: 0; transform: translateY(30px); transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);">
-                <div class="status-badge ${statusClass}">${statusText}</div>
-
-                <div class="card-header">
-                    <div class="admin-avatar">${admin.avatar}</div>
-                    <div class="admin-info">
-                        <h3>#${admin.tag}</h3>
-                        <div class="admin-role">${admin.role}</div>
-                    </div>
-                </div>
-
-                <div class="rating-display">
-                    <div class="stars">${stars}</div>
-                    <span class="rating-number">${admin.rating.toFixed(1)}</span>
-                </div>
-
-                <div class="admin-stats">
-                    <div class="stat-item">
-                        <div class="stat-value">${admin.dialogs}</div>
-                        <div class="stat-label-small">Диалогов</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">${admin.resolved}</div>
-                        <div class="stat-label-small">Решено</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">${admin.efficiency}%</div>
-                        <div class="stat-label-small">Эффективность</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">${admin.response_time}</div>
-                        <div class="stat-label-small">Ответ</div>
-                    </div>
-                </div>
-
-                <div class="specialties">
-                    ${specialtyTags}
-                </div>
-
-                <button class="select-button" onclick="event.stopPropagation(); adminSelector.selectAdmin(${admin.id})">
-                    <i class="fas fa-user-check"></i> Выбрать администратора
-                </button>
-            </div>
-        `;
-    }
-
-    generateStars(rating) {
-        const fullStars = Math.floor(rating);
-        const hasHalfStar = rating % 1 !== 0;
-        let stars = '';
-
-        for (let i = 0; i < fullStars; i++) {
-            stars += '<i class="fas fa-star star"></i>';
-        }
-
-        if (hasHalfStar) {
-            stars += '<i class="fas fa-star-half-alt star"></i>';
-        }
-
-        for (let i = fullStars + (hasHalfStar ? 1 : 0); i < 5; i++) {
-            stars += '<i class="far fa-star star"></i>';
-        }
-
-        return stars;
-    }
-
-    selectAdmin(adminId) {
-        const admin = this.admins.find(a => a.id === adminId);
-        if (!admin) return;
-
-        this.selectedAdmin = admin;
-
-        // Обновляем визуальное выделение
-        document.querySelectorAll('.admin-card').forEach(card => {
-            card.classList.remove('selected');
-        });
-
-        event.currentTarget.classList.add('selected');
-
-        // Показываем модальное окно
-        this.showModal(admin);
-    }
-
-    showModal(admin) {
-        const modal = document.getElementById('modal');
-        const avatar = document.getElementById('modalAvatar');
-        const title = document.getElementById('modalTitle');
-        const subtitle = document.getElementById('modalSubtitle');
-        const stats = document.getElementById('modalStats');
-
-        avatar.textContent = admin.avatar;
-        title.textContent = `#${admin.tag}`;
-        subtitle.textContent = `${admin.role} • ${admin.experience}`;
-
-        stats.innerHTML = `
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
-                <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 15px;">
-                    <div style="font-size: 2rem; margin-bottom: 8px;">⭐</div>
-                    <div style="font-size: 1.5rem; font-weight: 600; margin-bottom: 5px;">${admin.rating.toFixed(1)}</div>
-                    <div style="color: var(--text-secondary); font-size: 0.9rem;">Рейтинг</div>
-                </div>
-                <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 15px;">
-                    <div style="font-size: 2rem; margin-bottom: 8px;">⚡</div>
-                    <div style="font-size: 1.5rem; font-weight: 600; margin-bottom: 5px;">${admin.efficiency}%</div>
-                    <div style="color: var(--text-secondary); font-size: 0.9rem;">Эффективность</div>
-                </div>
-                <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 15px;">
-                    <div style="font-size: 2rem; margin-bottom: 8px;">💬</div>
-                    <div style="font-size: 1.5rem; font-weight: 600; margin-bottom: 5px;">${admin.dialogs}</div>
-                    <div style="color: var(--text-secondary); font-size: 0.9rem;">Диалогов</div>
-                </div>
-                <div style="text-align: center; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 15px;">
-                    <div style="font-size: 2rem; margin-bottom: 8px;">🕐</div>
-                    <div style="font-size: 1.5rem; font-weight: 600; margin-bottom: 5px;">${admin.response_time}</div>
-                    <div style="color: var(--text-secondary); font-size: 0.9rem;">Ответ</div>
-                </div>
-            </div>
-
-            <div style="margin-top: 20px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 15px;">
-                <h4 style="margin-bottom: 10px; color: var(--text-primary);">Специализации:</h4>
-                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                    ${admin.specialties.map(spec => `
-                        <span style="background: rgba(79,172,254,0.2); color: #4facfe; padding: 6px 12px; border-radius: 15px; font-size: 0.8rem;">
-                            ${spec}
-                        </span>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-
-        modal.classList.add('show');
-    }
-
-    closeModal() {
-        const modal = document.getElementById('modal');
-        modal.classList.remove('show');
-
-        // Убираем выделение
-        document.querySelectorAll('.admin-card').forEach(card => {
-            card.classList.remove('selected');
-        });
-
-        this.selectedAdmin = null;
-    }
-
-    confirmSelection() {
-        if (!this.selectedAdmin) {
-            this.showToast('Администратор не выбран', 'error');
-            return;
-        }
-
-        const confirmBtn = document.getElementById('confirmBtn');
-        const btnText = confirmBtn.querySelector('.btn-text') || confirmBtn;
-        const originalText = btnText.innerHTML;
-
-        // Показываем загрузку
-        btnText.innerHTML = '<span class="loading"></span> Отправка...';
+    try {
+      // Показываем loading на кнопке
+      const confirmBtn = document.getElementById('confirmBtn');
+      if (confirmBtn) {
+        const originalText = confirmBtn.innerHTML;
+        confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Отправка...';
         confirmBtn.disabled = true;
+      }
 
-        // Имитация отправки
-        setTimeout(() => {
-            this.sendToTelegram(this.selectedAdmin);
+      // Отправляем данные в Telegram WebApp
+      const result = await this.sendToTelegram({
+        action: 'select_admin',
+        admin_tag: this.selectedAdmin.tag,
+        admin_data: this.selectedAdmin
+      });
 
-            btnText.innerHTML = originalText;
-            confirmBtn.disabled = false;
+      if (result) {
+        this.showSuccess('Запрос отправлен успешно!');
+        this.closeModal();
 
-            this.closeModal();
-            this.showToast(`Администратор #${this.selectedAdmin.tag} выбран!`, 'success');
-        }, 1500);
+        // Добавляем визуальный feedback
+        this.addSelectionEffect();
+
+      } else {
+        throw new Error('Не удалось отправить запрос');
+      }
+
+    } catch (error) {
+      console.error('Ошибка отправки:', error);
+      this.showError('Ошибка отправки запроса');
+
+      // Восстанавливаем кнопку
+      const confirmBtn = document.getElementById('confirmBtn');
+      if (confirmBtn) {
+        confirmBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Отправить запрос';
+        confirmBtn.disabled = false;
+      }
+    }
+  }
+
+  // ===== ОТПРАВКА В TELEGRAM =====
+  async sendToTelegram(data) {
+    try {
+      // Проверяем доступность Telegram WebApp API
+      if (window.Telegram && window.Telegram.WebApp) {
+        // Отправляем данные через Telegram WebApp API
+        window.Telegram.WebApp.sendData(JSON.stringify(data));
+        return true;
+      } else {
+        console.warn('Telegram WebApp API недоступен');
+
+        // В режиме разработки показываем что отправили бы
+        console.log('Данные для отправки:', data);
+
+        // Симулируем отправку
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return true;
+      }
+    } catch (error) {
+      console.error('Ошибка отправки в Telegram:', error);
+      return false;
+    }
+  }
+
+  // ===== ЭФФЕКТ ВЫБОРА =====
+  addSelectionEffect() {
+    const selectedCard = document.querySelector(`[data-admin-id="${this.selectedAdmin.id}"]`);
+    if (selectedCard) {
+      selectedCard.style.animation = 'pulse 0.6s ease';
+      selectedCard.style.borderColor = '#00ff88';
+      selectedCard.style.boxShadow = '0 0 30px rgba(0, 255, 136, 0.6)';
+
+      setTimeout(() => {
+        selectedCard.style.animation = '';
+        selectedCard.style.borderColor = '';
+        selectedCard.style.boxShadow = '';
+      }, 2000);
+    }
+  }
+
+  // ===== УВЕДОМЛЕНИЯ =====
+  showSuccess(message) {
+    this.showToast(message, 'success');
+  }
+
+  showError(message) {
+    this.showToast(message, 'error');
+  }
+
+  showToast(message, type) {
+    const toastId = type === 'success' ? 'successToast' : 'errorToast';
+    const toast = document.getElementById(toastId);
+
+    if (toast) {
+      const span = toast.querySelector('span');
+      if (span) span.textContent = message;
+
+      toast.classList.add('show');
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+  }
+
+  // ===== ОБНОВЛЕНИЕ СЧЕТЧИКОВ =====
+  updateBadges() {
+    const availableBadge = document.getElementById('availableBadge');
+    const unavailableBadge = document.getElementById('unavailableBadge');
+
+    if (availableBadge) {
+      availableBadge.textContent = this.appData.admins.length;
     }
 
-    sendToTelegram(admin) {
-        if (this.tg) {
-            const data = {
-                type: 'beautiful_admin_selected',
-                admin: {
-                    id: admin.id,
-                    tag: admin.tag,
-                    role: admin.role,
-                    rating: admin.rating,
-                    efficiency: admin.efficiency,
-                    response_time: admin.response_time,
-                    specialties: admin.specialties,
-                    experience: admin.experience
-                },
-                timestamp: new Date().toISOString()
-            };
+    if (unavailableBadge) {
+      unavailableBadge.textContent = this.appData.unavailable_admins?.length || 0;
+    }
+  }
 
-            console.log('📤 Отправка в Telegram:', data);
-            this.tg.sendData(JSON.stringify(data));
-
-            setTimeout(() => {
-                this.tg.close();
-            }, 2000);
-        } else {
-            console.log('🎮 Тестовый режим - выбран админ:', admin);
+  // ===== ОБРАБОТКА КЛАВИШ =====
+  handleKeyPress(e) {
+    switch(e.key) {
+      case 'Escape':
+        if (document.getElementById('confirmModal').classList.contains('show')) {
+          this.closeModal();
         }
+        break;
+      case 'Enter':
+        if (document.getElementById('confirmModal').classList.contains('show')) {
+          this.confirmSelection();
+        }
+        break;
+      case '1':
+        if (!e.target.matches('input')) {
+          this.switchTab('available');
+        }
+        break;
+      case '2':
+        if (!e.target.matches('input')) {
+          this.switchTab('unavailable');
+        }
+        break;
     }
+  }
 
-    showToast(message, type = 'success') {
-        const container = document.getElementById('toastContainer');
-        const toast = document.createElement('div');
+  // ===== PARALLAX ЭФФЕКТЫ =====
+  setupParallax() {
+    window.addEventListener('scroll', () => {
+      const scrolled = window.pageYOffset;
+      const rate = scrolled * -0.5;
 
-        toast.className = `toast toast-${type}`;
-        toast.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <div style="font-size: 1.2rem;">
-                    ${type === 'success' ? '✅' : '❌'}
-                </div>
-                <div>
-                    <div style="font-weight: 600; margin-bottom: 2px;">
-                        ${type === 'success' ? 'Успешно!' : 'Ошибка!'}
-                    </div>
-                    <div style="font-size: 0.9rem; color: var(--text-secondary);">
-                        ${message}
-                    </div>
-                </div>
-            </div>
-        `;
+      document.querySelectorAll('.particle').forEach((particle, index) => {
+        const speed = 1 + (index % 3) * 0.5;
+        particle.style.transform = `translateY(${rate * speed}px)`;
+      });
+    });
+  }
 
-        container.appendChild(toast);
+  // ===== МАГНЕТИЧЕСКИЕ ЭФФЕКТЫ =====
+  setupMagneticEffects() {
+    document.addEventListener('mousemove', (e) => {
+      const cards = document.querySelectorAll('.admin-card:hover');
 
-        setTimeout(() => {
-            toast.classList.add('show');
-        }, 100);
+      cards.forEach(card => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
 
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => {
-                if (toast.parentNode) {
-                    toast.parentNode.removeChild(toast);
-                }
-            }, 500);
-        }, 3000);
-    }
+        const moveX = x * 0.05;
+        const moveY = y * 0.05;
+
+        card.style.transform = `translateX(${moveX}px) translateY(${moveY}px) rotateY(${x * 0.05}deg) rotateX(${-y * 0.05}deg)`;
+      });
+    });
+  }
+
+  // ===== АНИМАЦИИ =====
+  startAnimations() {
+    // Анимация частиц
+    this.animateParticles();
+
+    // Анимация волн
+    this.animateWaves();
+
+    // Запускаем цикл анимации
+    this.animationLoop();
+  }
+
+  animateParticles() {
+    const particles = document.querySelectorAll('.particle');
+
+    particles.forEach((particle, index) => {
+      const delay = Math.random() * 2000;
+      const duration = 15000 + Math.random() * 10000;
+
+      particle.style.animationDelay = `${delay}ms`;
+      particle.style.animationDuration = `${duration}ms`;
+    });
+  }
+
+  animateWaves() {
+    const waves = document.querySelectorAll('.wave');
+
+    waves.forEach((wave, index) => {
+      wave.style.animationDelay = `${index * 1000}ms`;
+    });
+  }
+
+  animationLoop() {
+    // Обновление анимаций каждый кадр
+    requestAnimationFrame(() => {
+      this.updateAnimations();
+      this.animationLoop();
+    });
+  }
+
+  updateAnimations() {
+    // Обновление позиций элементов и анимаций
+    const time = Date.now() * 0.001;
+
+    // Пульсация статус индикаторов
+    document.querySelectorAll('.status-indicator').forEach(indicator => {
+      const scale = 1 + Math.sin(time * 2) * 0.1;
+      indicator.style.transform = `scale(${scale})`;
+    });
+
+    // Мерцание звезд
+    document.querySelectorAll('.star').forEach((star, index) => {
+      const opacity = 0.7 + Math.sin(time * 3 + index) * 0.3;
+      star.style.opacity = opacity;
+    });
+  }
 }
 
-// Глобальная переменная для доступа
-let adminSelector;
+// ===== CSS ДЛЯ АНИМАЦИЙ (добавляется динамически) =====
+function addDynamicStyles() {
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes ripple {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
 
-// Инициализация при загрузке DOM
+    .no-results {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      border: 2px dashed rgba(255, 255, 255, 0.2);
+    }
+
+    .no-results-icon {
+      font-size: 4rem;
+      color: #8b5cf6;
+      margin-bottom: 20px;
+      animation: bounce 2s infinite;
+    }
+
+    .no-results h3 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      color: white;
+    }
+
+    .no-results p {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+// ===== ИНИЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЯ =====
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 Загрузка красивого селектора...');
-    adminSelector = new BeautifulAdminSelector();
+  // Добавляем динамические стили
+  addDynamicStyles();
+
+  // Создаем экземпляр приложения
+  window.adminPanel = new FuturisticAdminPanel();
+
+  // Настройка Telegram WebApp API
+  if (window.Telegram && window.Telegram.WebApp) {
+    window.Telegram.WebApp.ready();
+    window.Telegram.WebApp.expand();
+
+    // Настройка главной кнопки
+    window.Telegram.WebApp.MainButton.setText('Выбрать админа');
+    window.Telegram.WebApp.MainButton.show();
+
+    console.log('📱 Telegram WebApp API инициализирован');
+  }
+
+  console.log('✨ Футуристический админ селектор загружен!');
 });
 
-// Глобальные функции для inline обработчиков
-function closeModal() {
-    adminSelector.closeModal();
-}
-
-function confirmSelection() {
-    adminSelector.confirmSelection();
-}
-
-// Экспорт для отладки
+// ===== ОТЛАДКА =====
 if (typeof window !== 'undefined') {
-    window.beautifulAdminSelector = {
-        instance: () => adminSelector,
-        admins: () => adminSelector.admins,
-        showToast: (msg, type) => adminSelector.showToast(msg, type)
-    };
+  window.debugAdminPanel = () => {
+    console.log('🔍 Отладочная информация:');
+    console.log('Текущая вкладка:', window.adminPanel?.currentTab);
+    console.log('Поисковый запрос:', window.adminPanel?.searchTerm);
+    console.log('Отфильтрованные админы:', window.adminPanel?.filteredAdmins);
+    console.log('Выбранный админ:', window.adminPanel?.selectedAdmin);
+  };
 }
-
-console.log('✨ Красивый селектор администраторов загружен!');
